@@ -290,3 +290,59 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 </body>
 </html>
 ==============================================================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex05 - 파라미터 활용 예시</title>
+</head>
+<body>
+
+	<h1>파라미터 활용 예시</h1>
+	<hr>
+	
+	<%--일반적인 웹 환경에서, 사용자가 주소창에 직접 파라미터를 작성하는 경우는 거의 없다 --%>
+	<%--현재 페이지에서는 입력만 받고, 입력받은 파라미터를 다른 페이지에 전달해서 처리하도록 설정 --%>
+	
+	<form action="ex05-result.jsp">
+		<input type="number" name="num" placeholder="번호" min="1" max="5" autofocus>
+		<input type="submit">
+	</form>
+	
+</body>
+</html>
+----------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" import="java.util.ArrayList, java.util.Arrays, java.util.Collections"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex05-result</title>
+</head>
+<body>
+
+	<h1>전달받은 파라미터를 활용하여 출력 내용을 결정</h1>
+	<hr>
+	<%
+		String num = request.getParameter("num");
+		int idx = 0;
+		if(num != null) {	// 파라미터를 입력하지 않았을 수도 있다
+			idx = Integer.parseInt(num);	
+		}
+		
+		String[] arr = {"짱구", "훈이", "유리", "철수", "맹구"};
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(arr));
+		Collections.sort(list);
+		
+		String value = (idx > 0) ? list.get(idx - 1) : "...";
+	%>
+	
+	<h2><%=idx %>번째 멤버의 이름은 <%=value %>입니다</h2>
+	<a href="ex05.jsp">입력페이지로 돌아가기</a>
+
+</body>
+</html>
+===========================================================================================
