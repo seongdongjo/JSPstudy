@@ -436,7 +436,7 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 		 	
 	 	} catch(Exception e) {
 	 		// out.print("<h3 style=\"color: red\";>입력이 잘못되었습니다</h3>");
-	 		response.sendRedirect("quiz01.jsp");	// 지정한 주소로 새로운 요청을 시도하세요(to Client)
+	 		response.sendRedirect("quiz01.jsp");	// 에러가 발생하면 -> 지정한 주소로 새로운 요청을 시도하세요(to Client)
 	 		System.out.println("예외 : " + e);
 	 	}
 	 %>
