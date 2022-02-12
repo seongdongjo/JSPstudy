@@ -333,7 +333,7 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 			idx = Integer.parseInt(num);	
 		}
 		
-		String[] arr = {"짱구", "훈이", "유리", "철수", "맹구"};
+		String[] arr = {"짱구", "훈이", "유리", "철수", "맹구"}; 
 		ArrayList<String> list = new ArrayList<String>(Arrays.asList(arr));
 		Collections.sort(list);
 		
@@ -346,3 +346,42 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 </body>
 </html>
 ===========================================================================================
+#)핵심은 자바코드가 먼저실행된다
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex06 - 파라미터를 HTML 태그 요소 및 속성으로 반영하기</title>
+	<%
+		String fontColor = "#000000";
+		String bgColor = "#ffffff";
+	
+		fontColor = request.getParameter("fontColor");
+		bgColor = request.getParameter("bgColor");
+		
+		if(fontColor == null) 	fontColor = "#000000";
+		if(bgColor == null) 	bgColor = "#ffffff";
+	%>
+<style>
+	body {
+		color: <%=fontColor%>;
+		background-color: <%=bgColor%>;
+	}
+</style>
+</head>
+<body>
+	<h1>파라미터를 HTML 태그 요소 및 속성으로 반영하기</h1>
+	<hr>
+	#)기본값으로 들어가있다. input에 #000000과 #ffffff
+	<form>	<%-- action 속성이 없으면 현재 페이지가 요청을 받아서 처리한다 --%>
+		<p>글자색 : <input type="color" name="fontColor" value="<%=fontColor%>"></p>
+		<p>배경색 : <input type="color" name="bgColor" value="<%=bgColor%>"></p>
+		<input type="submit" value="적용">
+	</form>
+
+</body>
+</html>
+======================================================================
