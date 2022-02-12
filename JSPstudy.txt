@@ -464,3 +464,187 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 </body>
 </html>
 ==============================================================================
+public class DTO {
+	//private 멤버 필드를
+	//public getter/setter
+	//작성하지 않는 경우 기본 생성자
+}
+<jsp:useBean />
+<jsp:setProperty />
+
+-<input> 태그의 name 속성을 기준으로 파라미터와 gette/setter를 매핑한다
+-request.getParameter()는 String이지만,
+  <jsp:setProperty />는 primitive에 대한 파싱도 자동 지원한다
+-다수의 파라미터를 캡슐화해서 하나의 객체로 취급하기 때문에, 다른 페이지나 DB에 전달하기 용이하다
+=============
+<form action="파라미터를 전달받을 주소" method="파라미터를 전달하는 방식">
+- GET: 폼을 제출하면 파라미터를 포함하여 GET방식의 새로운 요청을 만들어낸다
+  (파라미터를 쿼리스트링형태로 전달, 주소창을 통해서 전달)
+- POST: 폼을 제출하면 파라미터는 별도의 헤더를 통해서 전달
+  (request 헤더의 form-data 영역으로 전달)
+  (주소창을 통해서 전달하는 방식이 아니므로, 글자를 전달하는 규칙(인코딩)이달라질수있다)
+  <% request.setCharacterEncoding("UTF-8"); %>
+  request.getParameter()를 호출하기 전에 위 코드가 있어야 한다.
+=============
+request.getMethod()
+요청방식에 따른 분류
+
+GET VS POST
+
+GET
+- 주소창을 통해서 파라미터를 전달한다
+- POST에 비해서 빠르다
+- 글자로 표현가능한 데이터만 전달할 수 있다(파일전송불가)
+- 글자수 제한이 있는 경우도 있다(최근 환경에서는 사실상 길이 제한은 거의 없음)
+- 용량 제한은 어느정도 있다
+- 자바스크립트를 통한 주소변경(location.href='주소'), <a>통한 주소변경은 모두 GET방식의 요청이다
+
+POST
+- 요청헤더의 form-data영역에 파라미터를 담아서 전송 (주소창을 통하지 않는다)
+- 비밀번호와 같이 보안상 민감한 데이터를 다룰때에는 글자로 구성된 데이터라고 해도, POST를 사용한다
+- 단, 주소창에 노출이 되지않을 뿐, 패킷을 열어보면 패스워드도 식별가능하다
+- 파일전송가능(추가적인 속성을 작성해야한다)
+
+#)파라미터는 문자열만 된다(클라이언트가 쓴 정보에 한해서). 그래서, 내가 만든 어브리뷰트를 쓸수있다. 모든 자료형을 쓸수있다.
+===================================================================
+package day02;
+
+public class Ex01DTO { //기본생성자도 같이있다
+	private String name;
+	private String age;
+	private String address;
+	private String birth;
+	private String gender;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getBirth() {
+		return birth;
+	}
+	public void setBirth(String birth) {
+		this.birth = birth;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+}
+---------------
+<%@page import="day02.Ex01DTO"%>
+<%@page import="java.util.Enumeration"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.Map"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex01 - 다수의 파라미터 처리하기</title>
+</head>
+<body>
+	<h1>다수의 파라미터 처리하기</h1>
+	<hr>
+	
+	<form>
+		<p><input type="text" name="name" placeholder="이름"></p>
+		<p><input type="text" name="age" placeholder="나이"></p>
+		<p><input type="text" name="address" placeholder="주소"></p>
+		<p><input type="number" name="birth" placeholder="생년월일" min="10000" max="999999"></p>
+		<p>
+			<select name="gender">
+				<option>===성별===</option>
+				<option>남성</option>
+				<option>여성</option>
+				<option>선택안함</option>
+			</select>
+		</p>
+		<input type="submit">
+	</form>
+	<fieldset>
+		<legend>request.getParameterMap()</legend>
+	<%
+		//만약 이렇게 입력시 test.jsp?name=이지은&name=홍진호&name=나단비
+		//String[] param = {"이지은", "홍진호", "나단비"}
+	
+		//다수의 파라미터를 컬렉션 중 Map의 형태로 묶어서 가져올 수 있다
+		Map<String, String[]> map = request.getParameterMap();
+		//map에서 key만 묶어서 Set 형태로 가져온다
+		Set<String> keySet = map.keySet();
+		for(String key : keySet) {
+			String value = map.get(key)[0]; //자료형만 배열일뿐(배열길이는 1), 값은 하나밖에 없어서 arr[0]으로 받으면된다
+			out.println(key + " : " + value + "<br>");
+		}
+	%>
+	</fieldset>
+	
+	<!-- 또 다른 방법 -->
+	<fieldset>
+		<legend>request.getParameterNames()</legend>
+	<%
+		Enumeration<String> enu = request.getParameterNames();
+		
+		//내가아직 체크하지 않은 요소가 있나 체크 -> 다했으면 false반환
+		while(enu.hasMoreElements()) { 
+			String name = enu.nextElement(); //체크하지않은 요소를 가져와서(파라미터이름)
+			String param = request.getParameter(name);
+			out.println(name + " : " + param + "<br>");
+		}
+	%>
+	</fieldset>
+	<!-- 또 다른 방법 -->
+	<fieldset>
+		<legend>DTO클래스를 이용하여 직접 입력받기</legend>
+	<%
+		Ex01DTO dto = new Ex01DTO();
+		dto.setAddress(request.getParameter("address"));
+		dto.setAge(request.getParameter("age"));
+		dto.setBirth(request.getParameter("birth"));
+		dto.setGender(request.getParameter("gender"));
+		dto.setName(request.getParameter("name"));
+	%>
+	name: <%=dto.getName() %><br>
+	age: <%=dto.getAge() %><br>
+	address: <%=dto.getAddress() %><br>
+	birth: <%=dto.getBirth() %><br>
+	gender: <%=dto.getGender() %><br>
+	</fieldset>
+	
+	<!-- 위보다 간편한방법 객체생성, *로 input에 name이 age가 있는지보고 setAge이런거 다해준다 -->
+	<!-- setProperty -> setter처리를 해주겠다 -->
+	<fieldset>
+		<!-- jsp: 자바코드로 치기때문에 먼저실행한다 -->
+		<legend>jsp:setProperty(액션태그)</legend>
+		<jsp:useBean id="dto2" class="day02.Ex01DTO"/> <%--객체 생성(기본생성자) --%>
+		
+		<%--클래스가 가지는 setter와 input의 name이 일치한다면 파라미터를 받아서 객체에 대입 --%>
+		<%--파라미터는 String이지만 -> 정수형 parseInt도 알아서 해준다 --%>
+		<jsp:setProperty property="*" name="dto2" />
+		name: <%=dto.getName() %><br>
+		age: <%=dto.getAge() %><br>
+		address: <%=dto.getAddress() %><br>
+		birth: <%=dto.getBirth() %><br>
+		gender: <jsp:getProperty name="dto2" property="gender" /><br>
+		<%-- 출력 문법은 있지만 출력시에는 getProperty를 잘 사용하지 않는다. --%>
+	</fieldset>
+	
+</body>
+</html>
+====================================================================
