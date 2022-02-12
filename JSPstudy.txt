@@ -550,7 +550,7 @@ public class Ex01DTO { //기본생성자도 같이있다
 <%@page import="day02.Ex01DTO"%>
 <%@page import="java.util.Enumeration"%>
 <%@page import="java.util.Set"%>
-<%@page import="java.util.Map"%>
+<%@ page import="java.util.Map"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -560,6 +560,7 @@ public class Ex01DTO { //기본생성자도 같이있다
 <title>ex01 - 다수의 파라미터 처리하기</title>
 </head>
 <body>
+
 	<h1>다수의 파라미터 처리하기</h1>
 	<hr>
 	
@@ -567,49 +568,51 @@ public class Ex01DTO { //기본생성자도 같이있다
 		<p><input type="text" name="name" placeholder="이름"></p>
 		<p><input type="text" name="age" placeholder="나이"></p>
 		<p><input type="text" name="address" placeholder="주소"></p>
-		<p><input type="number" name="birth" placeholder="생년월일" min="10000" max="999999"></p>
+		<p><input type="number" name="birth" placeholder="생년월일" min="10000" max="999999" ></p>
 		<p>
 			<select name="gender">
-				<option>===성별===</option>
-				<option>남성</option>
-				<option>여성</option>
-				<option>선택안함</option>
+				<option value="">===성별===</option>
+				<option value="남성">남성</option>
+				<option value="여성">여성</option>
+				<option value="none">선택안함</option>
 			</select>
 		</p>
 		<input type="submit">
 	</form>
+	
 	<fieldset>
 		<legend>request.getParameterMap()</legend>
 	<%
-		//만약 이렇게 입력시 test.jsp?name=이지은&name=홍진호&name=나단비
-		//String[] param = {"이지은", "홍진호", "나단비"}
+		// test.jsp?name=이지은&name=홍진호&name=나단비
+		// String[] param = {"이지은", "홍진호", "나단비"};
 	
-		//다수의 파라미터를 컬렉션 중 Map의 형태로 묶어서 가져올 수 있다
+		// 다수의 파라미터를 컬렉션 중 Map의 형태로 묶어서 가져올 수 있다 
 		Map<String, String[]> map = request.getParameterMap();
-		//map에서 key만 묶어서 Set 형태로 가져온다
+		
+		// map 에서 key만 묶어서 Set 형태로 가져온다
 		Set<String> keySet = map.keySet();
+		
 		for(String key : keySet) {
-			String value = map.get(key)[0]; //자료형만 배열일뿐(배열길이는 1), 값은 하나밖에 없어서 arr[0]으로 받으면된다
+			String value = map.get(key)[0];	// 자료형만 배열일 뿐, 값은 하나밖에 없어서 arr[0] 로 받으면 된다
 			out.println(key + " : " + value + "<br>");
 		}
 	%>
 	</fieldset>
 	
-	<!-- 또 다른 방법 -->
 	<fieldset>
 		<legend>request.getParameterNames()</legend>
 	<%
 		Enumeration<String> enu = request.getParameterNames();
 		
-		//내가아직 체크하지 않은 요소가 있나 체크 -> 다했으면 false반환
-		while(enu.hasMoreElements()) { 
-			String name = enu.nextElement(); //체크하지않은 요소를 가져와서(파라미터이름)
-			String param = request.getParameter(name);
-			out.println(name + " : " + param + "<br>");
+		while(enu.hasMoreElements()) {			// 아직 처리하지 않은 다음 요소가 존재한다면 (true/false)
+			String name = enu.nextElement();	// 그 요소를 하나 가져와서 (파라미터 이름)
+			String param = request.getParameter(name); 	// 파라미터 값을 불러오고
+			out.println(name + " : " + param + "<br>");	// 이름과 값을 각각 출력
 		}
 	%>
+	
 	</fieldset>
-	<!-- 또 다른 방법 -->
+	
 	<fieldset>
 		<legend>DTO클래스를 이용하여 직접 입력받기</legend>
 	<%
@@ -620,31 +623,249 @@ public class Ex01DTO { //기본생성자도 같이있다
 		dto.setGender(request.getParameter("gender"));
 		dto.setName(request.getParameter("name"));
 	%>
-	name: <%=dto.getName() %><br>
-	age: <%=dto.getAge() %><br>
-	address: <%=dto.getAddress() %><br>
-	birth: <%=dto.getBirth() %><br>
-	gender: <%=dto.getGender() %><br>
+	name : <%=dto.getName() %><br>
+	age : <%=dto.getAge() %><br>
+	address : <%=dto.getAddress() %><br>
+	birth : <%=dto.getBirth() %><br>
+	gender : <%=dto.getGender() %><br>
 	</fieldset>
 	
-	<!-- 위보다 간편한방법 객체생성, *로 input에 name이 age가 있는지보고 setAge이런거 다해준다 -->
-	<!-- setProperty -> setter처리를 해주겠다 -->
 	<fieldset>
-		<!-- jsp: 자바코드로 치기때문에 먼저실행한다 -->
 		<legend>jsp:setProperty(액션태그)</legend>
-		<jsp:useBean id="dto2" class="day02.Ex01DTO"/> <%--객체 생성(기본생성자) --%>
+		<%--객체 생성 (기본생성자) --%>
+		<jsp:useBean id="dto2" class="day02.Ex01DTO" />
 		
-		<%--클래스가 가지는 setter와 input의 name이 일치한다면 파라미터를 받아서 객체에 대입 --%>
-		<%--파라미터는 String이지만 -> 정수형 parseInt도 알아서 해준다 --%>
-		<jsp:setProperty property="*" name="dto2" />
-		name: <%=dto.getName() %><br>
-		age: <%=dto.getAge() %><br>
-		address: <%=dto.getAddress() %><br>
-		birth: <%=dto.getBirth() %><br>
-		gender: <jsp:getProperty name="dto2" property="gender" /><br>
-		<%-- 출력 문법은 있지만 출력시에는 getProperty를 잘 사용하지 않는다. --%>
+		<%--클래스가 가지는 setter와 input의 name이 일치한다면 파라미터를 받아서 객체에 대입 --%>			
+		<jsp:setProperty property="*" name="dto2" />	
+		
+		name : <%=dto2.getName() %><br>
+		age : <%=dto2.getAge() %><br>
+		address : <%=dto2.getAddress() %><br>
+		birth : <%=dto2.getBirth() %><br>
+		gender : <jsp:getProperty name="dto2" property="gender" /><br>
+		<%--문법이 있지만 출력시에는 getProperty를 잘 사용하지 않는다 --%>
 	</fieldset>
-	
+
 </body>
 </html>
 ====================================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex02 - 하나의 파라미터가 여러 값을 가지는 경우</title>
+</head>
+<body>
+	<h1>하나의 파라미터가 여러 값을 가지는 경우</h1>
+	<hr>
+	
+	<fieldset>
+		<!-- part라는 변수에 여러 값이 들어간다 , 근데 주소창에는 값이 여러개 들어갔지만 출력하면 값하나만 나온다-->
+		<legend>설문</legend>
+		<p>다음 중, 관심있는 분야를 선택하세여(중복선택가능)</p>
+	<form>
+		<label><input type="checkbox" name="part" value="네트워크">네트워크</label>
+		<label><input type="checkbox" name="part" value="시스템">시스템</label>
+		<label><input type="checkbox" name="part" value="웹(프론트)">웹(프론트)</label>
+		<label><input type="checkbox" name="part" value="웹(백엔드)">웹(백엔드)</label>
+		<label><input type="checkbox" name="part" value="앱개발">앱개발</label>
+		<p><input type="submit"></p>
+	</form>
+	</fieldset>
+	
+	<%  // null. 은 (x) -> part.length 은 파라미터가 아애 없으면 널포인터 에러뜬다
+		System.out.println(request.getParameter("part")); //이줄은 하나만 출력, 처음실행하면 아무것도 선택안해서 null출력
+		//값이 하나만 출력되는 걸 방지하기 위해
+		//변수이름은 하나이지만, 값이 여러개인 경우  String[] 의 형태로 값을 받을 수 있다.
+		String[] part = request.getParameterValues("part");
+		
+		out.println("희망분야: ");
+		for(String param : part) {
+			out.print(param + " ");
+		}
+		//또는
+		//for(int i = 0; part != null && i< part.length; i++) {
+		//	out.print(part[i]);
+		//	out.print( i == part.length -1 ? "<br>" : ", "); //마지막 요소이면 줄바꿈
+		out.println("<br>");
+	%>
+</body>
+</html>
+=====================================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex03 - form 입력과 출력을 하나의 페이지에서</title>
+</head>
+<body>
+	//위에서부터 순차적으로실행
+	<h1>form 입력과 (처리와 출력)을 하나의 페이지에서</h1>
+	<hr>
+	<%
+		String name = null;
+		switch(request.getMethod()) {	// 하나의 페이지가 method에 따라서 수행하는 내용을 달리 할 수 있다
+		case "GET":
+	%>
+	<h4>여기는 GET</h4>
+	<form action="" method="POST">
+		<input name="name" placeholder="이름을 입력하세요" autofocus>
+		<%--form 내부의 input이 하나인 경우 엔터키가 submit역할을 수행한다 --%>
+	</form>
+	<%
+			break;
+			
+		case "POST":
+	%>
+	<h4>여기는 POST</h4>
+	<%
+			request.setCharacterEncoding("UTF-8");
+			name = request.getParameter("name");
+	%>
+	<h3><%=name %>님, 안녕하세요 !!</h3>
+	<button onclick="location.href='ex03.jsp'">다시 GET으로</button> <!-- GET방식으로 다시요청 -->
+	<%
+			break;
+		}
+	%>
+</body>
+</html>
+=====================================================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex04</title>
+</head>
+<body>
+
+	<h1>redirect와 forward</h1>
+	<hr>
+	<ul>
+		<li>
+			<b>redirect : 서버가 클라이언트에게 새로운 주소를 알려주고, 클라이언트가 전달받은 주소로 새로운 요청을 시도</b>
+			<ol>
+				<li>서버 내 페이지는 물론, 서버 외부의 다른 주소도 요청 가능</li>
+				<li>클라이언트가 새로운 요청을 시도하므로, 주소창이 변경됨</li>
+			</ol>
+		</li>
+		<br>
+		<li>
+			forward : 서버가 가지고 있는 다른 문서로 응답을 바꿔치기함
+			<ol>
+				<li>요청을 분석하여 다른 응답이 필요한 경우, 서버가 가진 문서중 하나로 응답을 변경</li>
+				<li>클라이언트가 A를 요청한 경우, 서버가 임의로 B를 응답으로 보내주기 때문에 주소창은 A가 떠있음</li>
+				<li>페이지를 변경해도 request가 유지되므로, 파라미터를 다른페이지에서도 참조할 수 있다</li>
+			</ol>
+		</li>
+	</ul>
+	
+	<fieldset>
+		<legend><b>redirect	</b></legend>
+		<form method="POST">
+			<input name="redirectURL" placeholder="이동할 주소를 입력" size="50">
+			<input type="submit">
+		</form>
+	</fieldset>
+	
+	<fieldset>
+		<legend><b>forward</b></legend>
+		<form method="POST">
+			<input name="forwardURI" placeholder="이동할 주소를 입력" size="50">
+			<input type="submit">
+		</form>
+	</fieldset>
+	
+	<%
+		String redirectURL = request.getParameter("redirectURL");
+		String forwardURI = request.getParameter("forwardURI");
+		
+		if(redirectURL != null) {
+			response.sendRedirect(redirectURL); //입력한 값으로 주소창이 바뀐다. as입력시 ->http://localhost:8080/day02/as 출력
+		}
+		if(forwardURI != null) {
+			request.setCharacterEncoding("UTF-8");
+			
+			// 이동하고 싶은 주소를 전달하면서 요청을 지속적으로 따라갈 수 있는 객체를 받는다
+			RequestDispatcher rd = request.getRequestDispatcher(forwardURI);
+			
+			// 여기서 요청받은 request를 이동한 페이지에서도 그대로 사용할 수 있도록 request를 같이 전달한다
+			rd.forward(request, response); //주소창은 그대로
+		}
+	%>
+
+</body>
+</html>
+=============================================================================================
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex05-input</title>
+</head>
+<body>
+
+	<h1>ex05 - 입력만 하는 페이지</h1>
+	<hr>
+	<!-- POST방식은 주소창에 파라미터가 안보인다 -->
+	<form method="POST" action="ex05-process.jsp">
+		<input name="name" placeholder="이름">
+		<input name="age" placeholder="나이">
+		<input type="submit">
+	</form>
+
+</body>
+</html>
+---------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	// ex05 - 처리만 하는 페이지
+	
+	request.setCharacterEncoding("UTF-8");
+
+	String name = request.getParameter("name");
+	String age = request.getParameter("age");
+	// parameter는 setter 가 없다
+	
+	int num = Integer.parseInt(age);
+	
+	if(num >= 20) {	// 조건이 참이면 forward
+		String message = String.format("%s님은 %s살이므로 입장가능합니다~", name, age);
+		request.setAttribute("message", message); //forward하면 request를 받을수있다. 그대로
+		
+		request.getRequestDispatcher("ex05-output.jsp").forward(request, response); //output.jsp로 응답을 해주는데 주소창은 안바뀐다,(process.jsp그대로)
+		//response.sendRedirect("ex05-output.jsp");
+	}
+	else {			// 조건이 거짓이면 redirect
+		response.sendRedirect("ex05-input.jsp");
+	}
+%>
+---------------------
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ex05-output.jsp</title>
+</head>
+<body>
+	
+	<h1>ex05 - 출력만 하는 페이지</h1>
+	<hr>
+<%-- 	<%=request.getParameter("name") %> 님은 --%>
+<%-- 	<%=request.getParameter("age") %>살이므로, 입장 가능합니다 --%>
+	<%=request.getAttribute("message") %>
+	
+</body>
+</html>
+==============================================================
