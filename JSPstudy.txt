@@ -369,7 +369,7 @@ public class TestArrayAsList {
 		}
 		
 		String[] arr = {"짱구", "훈이", "유리", "철수", "맹구"}; 
-		ArrayList<String> list = new ArrayList<String>(Arrays.asList(arr));
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(arr)); //asList안에는 배열이 들어간다.
 		Collections.sort(list);
 		
 		String value = (idx > 0) ? list.get(idx - 1) : "...";
