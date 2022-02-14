@@ -153,7 +153,8 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
     pageEncoding="UTF-8"%>
 
 <%!	// declaration, 선언부, JSP가 클래스로 변환될때 멤버 필드와 멤버 메서드를 선언 및 정의하는 부분
-
+	// 클래스 같은 개념
+	
 	private String[] arr = {"김주현", "신은욱", "김재령", "홍서현"};
 	private ArrayList<String> al = new ArrayList<String>(Arrays.asList(arr));
 	
