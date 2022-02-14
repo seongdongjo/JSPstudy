@@ -156,7 +156,7 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 	// 클래스 같은 개념
 	
 	private String[] arr = {"김주현", "신은욱", "김재령", "홍서현"};
-	private ArrayList<String> al = new ArrayList<String>(Arrays.asList(arr));
+	private ArrayList<String> al = new ArrayList<String>(Arrays.asList(arr)); //일단배열인 arr을 ArrayList로 변환
 	
 	// 멤버필드이므로, 접근 제한자 적용 가능
 	
@@ -188,6 +188,40 @@ jre선택은 알아서 APPLY하면 이제 저 Tomcat서버가 jsp를 실행해�
 
 </body>
 </html>
+============================================================================
+Arrays.asList()는 Arrays의 private 정적 클래스인 ArrayList를 리턴한다.
+java.util.ArrayList 클래스와는 다른 클래스이다.
+
+java.util.Arrays.ArrayList 클래스는 set(), get(), contains() 메서드를 가지고 있지만
+원소를 추가하는 메서드는 가지고 있지 않기 때문에 사이즈를 바꿀 수 없다.
+
+package Test;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+ 
+ 
+public class TestArrayAsList {
+   public static void main(String[] args) {
+      String[] strs = {"alpha", "beta", "charlie"};
+      System.out.println(Arrays.toString(strs));   // [alpha, beta, charlie]
+ 
+      List<String> lst = Arrays.asList(strs); // new ArrayList<String>(); 대신에 사용
+      System.out.println(lst);  // [alpha, beta, charlie]
+ 
+      lst.add("ttt");     // error : asList()로 List를 생성하면 원소를 새롭게 추가할 수 없음
+ 
+      // Changes in array or list write thru
+      strs[0] += "88";
+      lst.set(2, lst.get(2) + "99"); // 2번째 인덱스 원소에 charlie99 넣음
+      System.out.println(Arrays.toString(strs)); // [alpha88, beta, charlie99]
+      System.out.println(lst);  // [alpha88, beta, charlie99]
+ 
+      // Initialize a list using an array
+      List<Integer> lstInt = Arrays.asList(22, 44, 11, 33);
+      System.out.println(lstInt);  // [22, 44, 11, 33]
+   }
+}
 ============================================================================
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
